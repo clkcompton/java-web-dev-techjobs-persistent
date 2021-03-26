@@ -35,7 +35,7 @@ public class HomeController {
     public String index(Model model) {
 
         model.addAttribute("title", "My Jobs");
-        model.addAttribute("employers", employerRepository.findAll());
+        model.addAttribute("jobs", jobRepository.findAll());
 
         return "index";
     }
@@ -62,10 +62,7 @@ public class HomeController {
             return "add";
         }
 
-        //should I be saving to the Job repo instead? Or does the Job class pull from the existing employer and skills repos?
-
         Employer employer = foundEmployer.get();
-//        employerRepository.save(employer);
 
         newJob.setEmployer(employer);
         newJob.setSkills(skillObjs);
@@ -78,7 +75,15 @@ public class HomeController {
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
 
-        return "view";
+        Optional<Job> foundJob = jobRepository.findById(jobId);
+
+        if (foundJob.isPresent()) {
+            Job job = foundJob.get();
+            model.addAttribute("job", job);
+            return "view";
+        } else {
+            return "redirect:../";
+        }
     }
 
 
